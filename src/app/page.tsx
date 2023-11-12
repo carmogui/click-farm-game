@@ -29,8 +29,18 @@ export default function Home() {
   const [sellWoodQtd, setSellWoodQtd] = useState(0);
   const [sellStoneQtd, setSellStoneQtd] = useState(0);
 
+  const [isChoping, setIsChoping] = useState(false);
+  const [isMining, setIsMining] = useState(false);
+
   const [axeLevel, setAxeLevel] = useState(1);
   const [pickaxeLevel, setPickaxeLevel] = useState(1);
+
+  const [stamina, setStamina] = useState(100);
+  const [isResting, setIsResting] = useState(false);
+
+  function getStamina() {
+    setIsResting((cur) => !cur);
+  }
 
   const axeHit = axeLevel * 2;
   const pickaxeHit = pickaxeLevel * 1;
@@ -43,15 +53,30 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => ticking && setCount(count + 1), 1e3);
     autoGetResourses();
+
+    if (isResting) {
+      if (stamina < 100) {
+        setStamina((cur) => cur + 5);
+      }
+    }
+
+    if (isChoping) {
+      if (stamina >= 10) {
+        setStamina((cur) => cur - 10);
+        setWood((cur) => cur + 10);
+      }
+    }
     return () => clearTimeout(timer);
   }, [count, ticking]);
 
   function getWood() {
-    if (devMode) {
-      setWood((cur) => cur + axeHit * 50);
-    } else {
-      setWood((cur) => cur + axeHit);
-    }
+    // if (devMode) {
+    //   setWood((cur) => cur + axeHit * 50);
+    // } else {
+    //   setWood((cur) => cur + axeHit);
+    // }
+
+    setIsChoping((cur) => !cur);
   }
 
   function getStone() {
@@ -89,14 +114,14 @@ export default function Home() {
   const stoneWorkerPrice = Math.floor(stoneWorker * 0.8 * 100) + 100;
 
   function buyWoodWorker() {
-    if (coins > woodWorkerPrice) {
+    if (coins >= woodWorkerPrice) {
       setWoodWorker((cur) => cur + 1);
       setCoins((cur) => cur - woodWorkerPrice);
     }
   }
 
   function buyStoneWorker() {
-    if (coins > stoneWorkerPrice) {
+    if (coins >= stoneWorkerPrice) {
       setStoneWorker((cur) => cur + 1);
       setCoins((cur) => cur - stoneWorkerPrice);
     }
@@ -145,17 +170,83 @@ export default function Home() {
         </div>
       )}
 
+      {/*=========================================================== SCRENARY */}
+
+      <div className={styles.scenary}>
+        <img
+          className={styles.treeInScenary}
+          src="https://static.vecteezy.com/system/resources/previews/013/743/345/original/pixel-art-tree-icon-png.png"
+          alt="get wood"
+        />
+
+        <img
+          className={styles.stoneInScenary}
+          src="https://i.pinimg.com/originals/b9/18/86/b918860d89d6ce3139dc89f8a3843aa6.png"
+          alt="get stone"
+        />
+
+        <div
+          className={
+            isChoping
+              ? styles.characterInScenaryChoping
+              : styles.characterInScenary
+          }
+        >
+          {isChoping ? (
+            <div className={styles.spriteStop}>
+              <Image
+                className={
+                  stamina >= 10
+                    ? styles.spriteChopCharacterMoving
+                    : styles.spriteChopCharacterStop
+                }
+                src="/character/chopping.png"
+                width={16 * 4 * 4}
+                height={16 * 4}
+                alt="character"
+                quality={100}
+              />
+            </div>
+          ) : (
+            <div className={styles.spriteStop}>
+              <Image
+                className={isResting ? styles.isResting : styles.sprite}
+                src="/character/character.png"
+                width={16 * 4}
+                height={16 * 4}
+                alt="character"
+                quality={100}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className={styles.wrapper}>
         <div className={styles.resources}>
           <div className={styles.resourceCounter}>
             <Image
               className={styles.sprite}
               src="/character/character.png"
-              width={17 * 3}
-              height={23 * 3}
+              width={16 * 4}
+              height={16 * 4}
               alt="character"
+              quality={100}
             />
             <span className={styles.text}>Damian</span>
+          </div>
+
+          {/* =============================== STAMINA */}
+
+          <div className={styles.resourceCounter}>
+            <span>stamina</span>
+
+            <div className={styles.staminaBar}>
+              <div
+                style={{ width: `${stamina}%` }}
+                className={styles.stamina}
+              ></div>
+            </div>
           </div>
 
           <div className={styles.resourceCounter}>
@@ -239,30 +330,33 @@ export default function Home() {
         </div>
 
         <div className={styles.buttons}>
-          <button className={styles.button} onClick={getWood}>
-            <img
-              className={styles.imageLarge}
-              src="https://static.vecteezy.com/system/resources/previews/013/743/345/original/pixel-art-tree-icon-png.png"
-              alt="get wood"
-            />
+          <button
+            className={styles.button}
+            onClick={getWood}
+            disabled={isResting}
+          >
             <img
               className={styles.image}
               src="https://art.pixilart.com/374fd2a7a4eafb0.png"
               alt="axe"
             />
+            <span>{isChoping ? "stop" : "start"}</span>
           </button>
 
           <button className={styles.button} onClick={getStone}>
-            <img
-              className={styles.imageLarge}
-              src="https://i.pinimg.com/originals/b9/18/86/b918860d89d6ce3139dc89f8a3843aa6.png"
-              alt="get stone"
-            />
             <img
               className={styles.image}
               src="https://art.pixilart.com/2c9335fed5ab4c7.png"
               alt="pickaxe"
             />
+          </button>
+
+          <button
+            className={styles.button}
+            onClick={getStamina}
+            disabled={isChoping}
+          >
+            REST
           </button>
         </div>
       </div>
