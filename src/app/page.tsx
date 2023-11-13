@@ -3,7 +3,15 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
-import { Bad, Button, Character } from "@/components";
+import {
+  Bad,
+  Button,
+  Character,
+  Grass,
+  House,
+  Stone,
+  Tree,
+} from "@/components";
 
 enum Resources {
   Wood = "wood",
@@ -19,7 +27,7 @@ export default function Home() {
   const [character, setCharacter] = useState({
     wood: 0,
     stone: 0,
-    cash: 20000,
+    cash: 200,
     axe: 1,
     pickaxe: 1,
 
@@ -32,6 +40,7 @@ export default function Home() {
   const [worker0, setWorker0] = useState({
     name: "Summer",
     stars: 5,
+    pickaxe: 1,
 
     stamina: 100,
     isResting: false,
@@ -46,6 +55,7 @@ export default function Home() {
   const pickaxePrice = Math.floor(character.pickaxe * 0.8 * 100) + 100;
 
   const [menus, setMenus] = useState({
+    showWorkers: false,
     showInventory: false,
     showOrders: false,
     showStore: false,
@@ -55,6 +65,7 @@ export default function Home() {
     setMenus((cur) => {
       return {
         showInventory: !cur.showInventory,
+        showWorkers: false,
         showOrders: false,
         showStore: false,
       };
@@ -65,6 +76,7 @@ export default function Home() {
     setMenus((cur) => {
       return {
         showOrders: !cur.showOrders,
+        showWorkers: false,
         showInventory: false,
         showStore: false,
       };
@@ -75,28 +87,45 @@ export default function Home() {
     setMenus((cur) => {
       return {
         showStore: !cur.showStore,
+        showWorkers: false,
         showOrders: false,
         showInventory: false,
       };
     });
   }
 
-  const [ticking, setTicking] = useState(true),
-    [count, setCount] = useState(0);
-  useEffect(() => {
-    const timer = setTimeout(() => ticking && setCount(count + 1), 1e3);
+  function toggleWorkers() {
+    setMenus((cur) => {
+      return {
+        showStore: false,
+        showWorkers: !cur.showWorkers,
+        showOrders: false,
+        showInventory: false,
+      };
+    });
+  }
 
+  /// ACTIONS ====================================
+  function characterResting(
+    character: any,
+    setCharacter: (character: any) => any
+  ) {
     if (character.isResting) {
       if (character.stamina < 100) {
-        setCharacter((cur) => {
+        setCharacter((cur: any) => {
           return { ...cur, stamina: cur.stamina + 5 };
         });
       }
     }
+  }
 
+  function characterChoping(
+    character: any,
+    setCharacter: (character: any) => any
+  ) {
     if (character.isChoping) {
       if (character.stamina >= 10) {
-        setCharacter((cur) => {
+        setCharacter((cur: any) => {
           return {
             ...cur,
             stamina: cur.stamina - 10,
@@ -105,22 +134,93 @@ export default function Home() {
         });
       }
     }
+  }
 
+  function characterMining(
+    character: any,
+    setCharacterAny: (character: any) => any
+  ) {
     if (character.isMining) {
       if (character.stamina >= 10) {
-        setCharacter((cur) => {
+        setCharacterAny((cur: any) => {
           return {
             ...cur,
             stamina: cur.stamina - 10,
             stone: cur.stone + pickaxeHit,
           };
         });
+
+        if (character.name === "Summer") {
+          setCharacter((cur) => {
+            return {
+              ...cur,
+              stone: cur.stone + pickaxeHit,
+            };
+          });
+        }
       }
     }
+  }
+
+  const [ticking, setTicking] = useState(true),
+    [count, setCount] = useState(0);
+  useEffect(() => {
+    const timer = setTimeout(() => ticking && setCount(count + 1), 1e3);
+
+    superDuperWorkerAi(worker0);
+
+    characterResting(character, setCharacter);
+    characterResting(worker0, setWorker0);
+
+    characterChoping(character, setCharacter);
+    characterChoping(worker0, setWorker0);
+
+    characterMining(character, setCharacter);
+    characterMining(worker0, setWorker0);
+
     return () => clearTimeout(timer);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, ticking]);
+
+  function superDuperWorkerAi(worker: any) {
+    if (worker.stamina < 50 && !worker.isResting) {
+      getStaminaWorker();
+    }
+
+    if (worker.stamina === 100 && !worker.isMining) {
+      getStoneWoker();
+    }
+  }
+
+  function stopWorker() {
+    const { isChoping, isMining, isResting } = worker0;
+    const isWorking = isChoping || isMining || isResting;
+
+    if (isWorking) {
+      setWorker0((cur) => {
+        return {
+          ...cur,
+          isResting: false,
+          isChoping: false,
+          isMining: false,
+        };
+      });
+    } else {
+      getStoneWoker();
+    }
+  }
+
+  function getStaminaWorker() {
+    setWorker0((cur) => {
+      return {
+        ...cur,
+        isResting: !cur.isResting,
+        isChoping: false,
+        isMining: false,
+      };
+    });
+  }
 
   function getStamina() {
     setCharacter((cur) => {
@@ -133,12 +233,34 @@ export default function Home() {
     });
   }
 
+  function getWoodWorker() {
+    setWorker0((cur) => {
+      return {
+        ...cur,
+        isChoping: !cur.isChoping,
+        isMining: false,
+        isResting: false,
+      };
+    });
+  }
+
   function getWood() {
     setCharacter((cur) => {
       return {
         ...cur,
         isChoping: !cur.isChoping,
         isMining: false,
+        isResting: false,
+      };
+    });
+  }
+
+  function getStoneWoker() {
+    setWorker0((cur) => {
+      return {
+        ...cur,
+        isMining: !cur.isMining,
+        isChoping: false,
         isResting: false,
       };
     });
@@ -206,6 +328,44 @@ export default function Home() {
   }
 
   const sellLevels = [50, 100, 500, 1000, 5000];
+
+  const inventoryWorker = (() => {
+    const { isChoping, isMining, isResting } = worker0;
+    const isWorking = isChoping || isMining || isResting;
+
+    return (
+      <div className={styles.floatMenu}>
+        <h2>workers</h2>
+
+        <div className={styles.resourceCounter}>
+          <Character skin={"worker0"} />
+          <span className={styles.text}>{worker0.name}</span>
+        </div>
+
+        <hr />
+
+        <span className={styles.text}>stamina: {worker0.stamina}</span>
+        <span className={styles.text}>
+          isChoping: {worker0.isChoping ? "✔️" : "❌"}
+        </span>
+        <span className={styles.text}>
+          isMining: {worker0.isMining ? "✔️" : "❌"}
+        </span>
+        <span className={styles.text}>
+          isResting: {worker0.isResting ? "✔️" : "❌"}
+        </span>
+
+        <hr />
+
+        <Button
+          onClick={() => stopWorker()}
+          variant={isWorking ? "success" : undefined}
+        >
+          working
+        </Button>
+      </div>
+    );
+  })();
 
   const inventory = (
     <div className={styles.floatMenu}>
@@ -368,8 +528,75 @@ export default function Home() {
     </div>
   );
 
+  const renderGrass = (
+    <>
+      <div className={styles.moreGrassInScenary0}>
+        <div className={styles.grassInScenary0}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary1}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary2}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary3}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary4}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary5}>
+          <Grass variant={0} />
+        </div>
+      </div>
+      <div className={styles.moreGrassInScenary1}>
+        <div className={styles.grassInScenary0}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary1}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary2}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary3}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary4}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary5}>
+          <Grass variant={0} />
+        </div>
+      </div>
+      <div className={styles.moreGrassInScenary2}>
+        <div className={styles.grassInScenary0}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary1}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary2}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary3}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary4}>
+          <Grass variant={0} />
+        </div>
+        <div className={styles.grassInScenary5}>
+          <Grass variant={0} />
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <main className={styles.main}>
+      {menus.showWorkers && inventoryWorker}
+
       {menus.showInventory && inventory}
 
       {menus.showOrders && orders}
@@ -394,19 +621,21 @@ export default function Home() {
       {/*=========================================================== SCRENARY */}
 
       <div className={styles.scenary}>
-        <img
-          className={styles.treeInScenary}
-          src="https://static.vecteezy.com/system/resources/previews/013/743/345/original/pixel-art-tree-icon-png.png"
-          alt="get wood"
-        />
+        {renderGrass}
 
-        <img
-          className={styles.stoneInScenary}
-          src="https://i.pinimg.com/originals/b9/18/86/b918860d89d6ce3139dc89f8a3843aa6.png"
-          alt="get stone"
-        />
+        <div className={styles.treeInScenary}>
+          <Tree level={0} />
+        </div>
+
+        <div className={styles.stoneInScenary}>
+          <Stone level={0} />
+        </div>
 
         <div className={styles.badInScenary}>
+          <Bad level={0} />
+        </div>
+
+        <div className={styles.bad2InScenary}>
           <Bad level={0} />
         </div>
 
@@ -433,11 +662,11 @@ export default function Home() {
 
         <div
           className={
-            character.isResting
+            worker0.isResting
               ? styles.workerInScenaryResting
-              : character.isChoping
+              : worker0.isChoping
               ? styles.workerInScenaryChoping
-              : character.isMining
+              : worker0.isMining
               ? styles.workerInScenaryMining
               : styles.workerInScenary
           }
@@ -446,7 +675,7 @@ export default function Home() {
             skin={"worker0"}
             toTheRight={worker0.isChoping}
             isChopping={worker0.isChoping}
-            isMining={character.isMining}
+            isMining={worker0.isMining}
             isResting={worker0.isResting}
             isTired={worker0.stamina < 10}
           />
@@ -481,6 +710,13 @@ export default function Home() {
           variant={character.isResting ? "success" : undefined}
         >
           REST
+        </Button>
+
+        <Button
+          onClick={toggleWorkers}
+          variant={menus.showWorkers ? "success" : undefined}
+        >
+          workers
         </Button>
 
         <Button

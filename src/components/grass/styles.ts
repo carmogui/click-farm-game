@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const propSize = "32px";
+const propSize = "8px";
 const pixelSize = 4;
 
 export const ImageContainer = styled.figure`

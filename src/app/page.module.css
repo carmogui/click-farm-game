@@ -7,7 +7,7 @@
 
 .floatMenu {
   position: absolute;
-  z-index: 1;
+  z-index: 5;
   top: 50px;
   left: 100px;
   display: flex;
@@ -103,32 +103,92 @@
 .scenary {
   margin: 100px 150px 0;
   position: relative;
-  height: 400px;
+  height: 600px;
   width: 800px;
-  border-bottom: 100px solid green;
-  box-shadow: inset 0px -40px 0 rgb(77, 212, 53);
 }
+
+/* ========================= GRASS */
+
+.moreGrassInScenary0 {
+  position: absolute;
+  bottom: 200px;
+  left: -200px;
+}
+
+.moreGrassInScenary1 {
+  position: absolute;
+  bottom: 100px;
+  left: 300px;
+}
+
+.moreGrassInScenary2 {
+  position: absolute;
+  bottom: 400px;
+  left: 100px;
+}
+
+.grassInScenary0 {
+  position: absolute;
+  left: 320px;
+  bottom: 23px;
+}
+.grassInScenary1 {
+  position: absolute;
+  left: 220px;
+  bottom: 43px;
+}
+.grassInScenary2 {
+  position: absolute;
+  left: 420px;
+  bottom: 18px;
+}
+.grassInScenary3 {
+  position: absolute;
+  left: 520px;
+  bottom: 11px;
+}
+.grassInScenary4 {
+  position: absolute;
+  left: 160px;
+  bottom: 23px;
+}
+.grassInScenary5 {
+  position: absolute;
+  left: 120px;
+  bottom: 2px;
+}
+
+/* ================================= BAD */
 
 .badInScenary {
   position: absolute;
+  left: 320px;
+  bottom: 223px;
+}
+
+.bad2InScenary {
+  position: absolute;
+  left: 420px;
+  bottom: 223px;
+}
+
+.characterInScenaryResting {
+  position: absolute;
+  left: 352px;
+  bottom: 274px;
+}
+
+.workerInScenaryResting {
+  position: absolute;
+  left: 452px;
+  bottom: 274px;
+}
+
+.houseInScenary {
+  z-index: -1;
+  position: absolute;
   left: 298px;
-  bottom: -12px;
-}
-
-.treeInScenary {
-  position: absolute;
-  left: -80px;
-  bottom: -10px;
-  width: 250px;
-  height: 345px;
-}
-
-.stoneInScenary {
-  position: absolute;
-  right: -10px;
-  bottom: -10px;
-  width: 180px;
-  height: 125px;
+  bottom: 24px;
 }
 
 .characterInScenary {
@@ -137,28 +197,50 @@
   bottom: 10px;
 }
 
-.characterInScenaryResting {
+.workerInScenary {
   position: absolute;
-  left: 340px;
-  bottom: 0px;
+  left: 274px;
+  bottom: 10px;
+}
+
+/* ===================== TREE */
+
+.treeInScenary {
+  position: absolute;
+  left: -80px;
+  bottom: 20px;
 }
 
 .characterInScenaryChoping {
   position: absolute;
   left: 60px;
+  bottom: 60px;
+}
+
+.workerInScenaryChoping {
+  position: absolute;
+  left: -30px;
   bottom: 10px;
 }
 
-.workerInScenaryMining {
+/* ===============   STONE */
+
+.stoneInScenary {
   position: absolute;
-  right: 0px;
-  bottom: 10px;
+  left: 600px;
+  bottom: -10px;
 }
 
 .characterInScenaryMining {
   position: absolute;
-  right: 134px;
-  bottom: 10px;
+  left: 608px;
+  bottom: 72px;
+}
+
+.workerInScenaryMining {
+  position: absolute;
+  left: 792px;
+  bottom: 82px;
 }
 
 .actionButtons {

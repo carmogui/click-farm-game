@@ -35,8 +35,4 @@ export const ImageContainer = styled.figure<{ $toTheRight: boolean }>`
   .spriteChopCharacterMoving {
     animation: chop 500ms steps(4) infinite;
   }
-
-  .isResting {
-    transform: rotate(90deg);
-  }
 `;

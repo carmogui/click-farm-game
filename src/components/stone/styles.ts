@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const propSize = "32px";
+const propSize = "64px";
 const pixelSize = 4;
 
 export const ImageContainer = styled.figure`
@@ -10,12 +10,7 @@ export const ImageContainer = styled.figure`
   height: calc(${propSize} * ${pixelSize});
 
   .defaultSize {
-    position: absolute;
     width: calc(${propSize} * ${pixelSize});
     height: calc(${propSize} * ${pixelSize});
-  }
-
-  .sheet {
-    z-index: 2;
   }
 `;
