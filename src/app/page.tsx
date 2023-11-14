@@ -168,8 +168,6 @@ export default function Home() {
     }
   }
 
-  const [isMoving, setIsMoving] = useState(false);
-
   const [ticking, setTicking] = useState(true),
     [count, setCount] = useState(0);
   useEffect(() => {
@@ -185,17 +183,6 @@ export default function Home() {
 
     characterMining(character, setCharacter);
     characterMining(worker0, setWorker0);
-
-    if (isMoving) {
-      if (movement.side === "bottom") {
-        setCamera((cur) => {
-          return {
-            ...cur,
-            y: cur.y - 3,
-          };
-        });
-      }
-    }
 
     return () => clearTimeout(timer);
 
@@ -806,8 +793,15 @@ export default function Home() {
 
   const [isHolding, setIsHolding] = useState(false);
   const [camera, setCamera] = useState({ x: 0, y: 0 });
+  const [charPosition, setCharPosition] = useState({
+    x: 200,
+    y: 200,
+  });
 
-  const [movement, setMovement] = useState({
+  const [movement, setMovement] = useState<{
+    side: "top" | "right" | "bottom" | "left";
+    isWalking: boolean;
+  }>({
     side: "bottom",
     isWalking: false,
   });
@@ -835,7 +829,6 @@ export default function Home() {
               isWalking: true,
             };
           });
-          setIsMoving(true);
         }
         if (e.code === "KeyW") {
           setMovement((cur) => {
@@ -844,7 +837,6 @@ export default function Home() {
               isWalking: true,
             };
           });
-          setIsMoving(true);
         }
         if (e.code === "KeyD") {
           setMovement((cur) => {
@@ -853,7 +845,6 @@ export default function Home() {
               isWalking: true,
             };
           });
-          setIsMoving(true);
         }
         if (e.code === "KeyA") {
           setMovement((cur) => {
@@ -862,7 +853,6 @@ export default function Home() {
               isWalking: true,
             };
           });
-          setIsMoving(true);
         }
       });
       document.body.addEventListener("keyup", (e) => {
@@ -873,7 +863,6 @@ export default function Home() {
               isWalking: false,
             };
           });
-          setIsMoving(false);
         }
         if (e.code === "KeyW") {
           setMovement((cur) => {
@@ -882,7 +871,6 @@ export default function Home() {
               isWalking: false,
             };
           });
-          setIsMoving(false);
         }
         if (e.code === "KeyD") {
           setMovement((cur) => {
@@ -891,7 +879,6 @@ export default function Home() {
               isWalking: false,
             };
           });
-          setIsMoving(false);
         }
         if (e.code === "KeyA") {
           setMovement((cur) => {
@@ -900,7 +887,6 @@ export default function Home() {
               isWalking: false,
             };
           });
-          setIsMoving(false);
         }
       });
     }
@@ -1076,7 +1062,14 @@ export default function Home() {
           />
         </div> */}
 
-        <div className={styles.characterInScenary}>
+        <div
+          style={{
+            position: "absolute",
+            left: charPosition.x,
+            top: charPosition.y,
+          }}
+          className={styles.characterInScenary}
+        >
           <CharacterWalk side={movement.side} isWalking={movement.isWalking} />
         </div>
 
