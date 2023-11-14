@@ -5,9 +5,20 @@
   padding: 0;
   margin: 0;
   font-family: "Press Start 2P", sans-serif;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none;
 }
 
 body {
+  overflow: hidden;
+}
+
+.block {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
   background-color: #46965c;
 }
 

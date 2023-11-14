@@ -6,3 +6,4 @@ export * from "./house";
 export * from "./grass";
 export * from "./stone";
 export * from "./tree";
+export * from "./characterWalk";

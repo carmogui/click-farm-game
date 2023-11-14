@@ -8,7 +8,7 @@
 .floatMenu {
   position: absolute;
   z-index: 5;
-  top: 50px;
+  top: 100px;
   left: 100px;
   display: flex;
   flex-direction: column;
@@ -104,80 +104,70 @@
   opacity: 0.5;
 }
 
-@keyframes chop {
-  from {
-    transform: translate3d(0px, 0, 0);
-  }
-  to {
-    transform: translate3d(-100%, 0, 0);
-  }
-}
-
-.spriteChopCharacterMoving {
-  image-rendering: pixelated;
-  animation: chop 500ms steps(4) infinite;
-}
-
-.spriteChopCharacterStop {
-  image-rendering: pixelated;
+.actionButtons {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+  margin: 8px;
+  top: 0;
+  right: 0;
 }
 
 .scenary {
-  margin: 100px 150px 0;
   position: relative;
-  height: 600px;
-  width: 800px;
+  top: 0;
+  left: 0;
 }
 
 /* ========================= GRASS */
 
 .moreGrassInScenary0 {
   position: absolute;
-  bottom: 200px;
-  left: -200px;
+  top: 238px;
+  left: -196px;
 }
 
 .moreGrassInScenary1 {
   position: absolute;
-  bottom: 100px;
-  left: 300px;
+  top: 425px;
+  left: 233px;
 }
 
 .moreGrassInScenary2 {
   position: absolute;
-  bottom: 400px;
-  left: 100px;
+  top: 26px;
+  left: 229px;
 }
 
 .grassInScenary0 {
   position: absolute;
   left: 320px;
-  bottom: 23px;
+  top: 23px;
 }
 .grassInScenary1 {
   position: absolute;
   left: 220px;
-  bottom: 43px;
+  top: 43px;
 }
 .grassInScenary2 {
   position: absolute;
   left: 420px;
-  bottom: 18px;
+  top: 18px;
 }
 .grassInScenary3 {
   position: absolute;
   left: 520px;
-  bottom: 11px;
+  top: 11px;
 }
 .grassInScenary4 {
   position: absolute;
   left: 160px;
-  bottom: 23px;
+  top: 23px;
 }
 .grassInScenary5 {
   position: absolute;
   left: 120px;
-  bottom: 2px;
+  top: 2px;
 }
 
 /* ================================= BAD */
@@ -185,44 +175,44 @@
 .badInScenary {
   position: absolute;
   left: 320px;
-  bottom: 223px;
+  top: 223px;
 }
 
 .bad2InScenary {
   position: absolute;
   left: 420px;
-  bottom: 223px;
+  top: 223px;
 }
 
 .characterInScenaryResting {
   position: absolute;
   left: 352px;
-  bottom: 274px;
+  top: 236px;
 }
 
 .workerInScenaryResting {
   position: absolute;
   left: 452px;
-  bottom: 274px;
+  top: 236px;
 }
 
 .houseInScenary {
   z-index: -1;
   position: absolute;
   left: 298px;
-  bottom: 24px;
+  top: 24px;
 }
 
 .characterInScenary {
   position: absolute;
   left: 174px;
-  bottom: 10px;
+  top: 10px;
 }
 
 .workerInScenary {
   position: absolute;
   left: 274px;
-  bottom: 10px;
+  top: 10px;
 }
 
 /* ===================== TREE */
@@ -230,19 +220,25 @@
 .treeInScenary {
   position: absolute;
   left: -80px;
-  bottom: 20px;
+  top: 20px;
+}
+
+.treeInScenary1 {
+  position: absolute;
+  left: 0px;
+  top: 220px;
 }
 
 .characterInScenaryChoping {
   position: absolute;
   left: 60px;
-  bottom: 60px;
+  top: 174px;
 }
 
 .workerInScenaryChoping {
   position: absolute;
   left: -30px;
-  bottom: 10px;
+  top: 174px;
 }
 
 /* ===============   STONE */
@@ -250,26 +246,22 @@
 .stoneInScenary {
   position: absolute;
   left: 600px;
-  bottom: -10px;
+  top: -10px;
 }
 
 .characterInScenaryMining {
   position: absolute;
   left: 608px;
-  bottom: 72px;
+  top: 72px;
 }
 
 .workerInScenaryMining {
   position: absolute;
   left: 792px;
-  bottom: 82px;
+  top: 82px;
 }
 
-.actionButtons {
-  display: flex;
-  gap: 8px;
-  margin: 8px;
-}
+/* ---------------- STAMINA */
 
 .staminaWrapper {
   position: absolute;
@@ -291,4 +283,23 @@
   width: 100%;
   height: 14px;
   background-color: rgb(255, 217, 0);
+}
+
+/* ============================== TEST HIT BUTTON */
+
+.testHitButton,
+.testHitButtonOff {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 100%;
+}
+
+.testHitButton:hover {
+  box-shadow: inset 0 0 4px 8px #1269d2;
+}
+
+.testHitButtonOff:hover {
+  box-shadow: inset 0 0 4px 8px #d21f12;
 }

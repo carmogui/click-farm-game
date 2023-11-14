@@ -8,6 +8,7 @@ export const ImageContainer = styled.figure`
   overflow: hidden;
   width: calc(${propSize} * ${pixelSize});
   height: calc(${propSize} * ${pixelSize});
+  pointer-events: none;
 
   .defaultSize {
     position: absolute;

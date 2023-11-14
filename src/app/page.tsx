@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bad,
   Button,
   Character,
+  CharacterWalk,
   Grass,
   House,
   Stone,
@@ -167,6 +168,8 @@ export default function Home() {
     }
   }
 
+  const [isMoving, setIsMoving] = useState(false);
+
   const [ticking, setTicking] = useState(true),
     [count, setCount] = useState(0);
   useEffect(() => {
@@ -182,6 +185,17 @@ export default function Home() {
 
     characterMining(character, setCharacter);
     characterMining(worker0, setWorker0);
+
+    if (isMoving) {
+      if (movement.side === "bottom") {
+        setCamera((cur) => {
+          return {
+            ...cur,
+            y: cur.y - 3,
+          };
+        });
+      }
+    }
 
     return () => clearTimeout(timer);
 
@@ -788,6 +802,136 @@ export default function Home() {
     </>
   );
 
+  const firstRender = useRef(true);
+
+  const [isHolding, setIsHolding] = useState(false);
+  const [camera, setCamera] = useState({ x: 0, y: 0 });
+
+  const [movement, setMovement] = useState({
+    side: "bottom",
+    isWalking: false,
+  });
+
+  useEffect(() => {
+    if (firstRender.current) {
+      document.body.addEventListener("mousedown", () => {
+        setIsHolding(true);
+      });
+      document.body.addEventListener("mouseup", () => {
+        setIsHolding(false);
+      });
+
+      document.body.addEventListener("keypress", (e) => {
+        if (e.code === "KeyI") {
+          toggleInventory();
+        }
+      });
+
+      document.body.addEventListener("keydown", (e) => {
+        if (e.code === "KeyS") {
+          setMovement((cur) => {
+            return {
+              side: "bottom",
+              isWalking: true,
+            };
+          });
+          setIsMoving(true);
+        }
+        if (e.code === "KeyW") {
+          setMovement((cur) => {
+            return {
+              side: "top",
+              isWalking: true,
+            };
+          });
+          setIsMoving(true);
+        }
+        if (e.code === "KeyD") {
+          setMovement((cur) => {
+            return {
+              side: "right",
+              isWalking: true,
+            };
+          });
+          setIsMoving(true);
+        }
+        if (e.code === "KeyA") {
+          setMovement((cur) => {
+            return {
+              side: "left",
+              isWalking: true,
+            };
+          });
+          setIsMoving(true);
+        }
+      });
+      document.body.addEventListener("keyup", (e) => {
+        if (e.code === "KeyS") {
+          setMovement((cur) => {
+            return {
+              side: "bottom",
+              isWalking: false,
+            };
+          });
+          setIsMoving(false);
+        }
+        if (e.code === "KeyW") {
+          setMovement((cur) => {
+            return {
+              side: "top",
+              isWalking: false,
+            };
+          });
+          setIsMoving(false);
+        }
+        if (e.code === "KeyD") {
+          setMovement((cur) => {
+            return {
+              side: "right",
+              isWalking: false,
+            };
+          });
+          setIsMoving(false);
+        }
+        if (e.code === "KeyA") {
+          setMovement((cur) => {
+            return {
+              side: "left",
+              isWalking: false,
+            };
+          });
+          setIsMoving(false);
+        }
+      });
+    }
+
+    firstRender.current = false;
+  }, [firstRender]);
+
+  useEffect(() => {
+    function event(e: any) {
+      setCamera((cur) => {
+        // TODO get screen size dinamicly
+        const xOutOfBounds =
+          cur.x + +e.movementX <= 0 || cur.x + +e.movementX >= 1000;
+        const yOutOfBounds =
+          cur.y + +e.movementY <= 0 || cur.y + +e.movementY >= 800;
+
+        return {
+          x: xOutOfBounds ? cur.x : cur.x + e.movementX,
+          y: yOutOfBounds ? cur.y : cur.y + e.movementY,
+        };
+      });
+    }
+    if (isHolding) {
+      document.body.addEventListener("mousemove", event);
+    } else {
+      document.body.removeEventListener("mousemove", event);
+    }
+
+    return () => document.body.removeEventListener("mousemove", event);
+  }, [isHolding]);
+
   return (
     <main className={styles.main}>
       {menus.showWorkers && inventoryWorker}
@@ -813,102 +957,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/*=========================================================== SCRENARY */}
-
-      <div className={styles.scenary}>
-        {renderGrass}
-
-        <div className={styles.treeInScenary}>
-          <Tree level={0} />
-        </div>
-
-        <div className={styles.stoneInScenary}>
-          <Stone level={0} />
-        </div>
-
-        <div className={styles.badInScenary}>
-          <Bad level={0} />
-        </div>
-
-        <div className={styles.bad2InScenary}>
-          <Bad level={0} />
-        </div>
-
-        <div
-          className={
-            character.isResting
-              ? styles.characterInScenaryResting
-              : character.isChoping
-              ? styles.characterInScenaryChoping
-              : character.isMining
-              ? styles.characterInScenaryMining
-              : styles.characterInScenary
-          }
-        >
-          <Character
-            skin={"main"}
-            toTheRight={character.isMining}
-            isChopping={character.isChoping}
-            isMining={character.isMining}
-            isResting={character.isResting}
-            isTired={character.stamina < 10}
-          />
-        </div>
-
-        <div
-          className={
-            worker0.isResting
-              ? styles.workerInScenaryResting
-              : worker0.isChoping
-              ? styles.workerInScenaryChoping
-              : worker0.isMining
-              ? styles.workerInScenaryMining
-              : styles.workerInScenary
-          }
-        >
-          <Character
-            skin={"worker0"}
-            toTheRight={worker0.isChoping}
-            isChopping={worker0.isChoping}
-            isMining={worker0.isMining}
-            isResting={worker0.isResting}
-            isTired={worker0.stamina < 10}
-          />
-        </div>
-      </div>
+      {/* ---------------------------------------------------HOTBAR------------------------------------ */}
 
       <div className={styles.actionButtons}>
         <Button
-          onClick={getWood}
-          variant={character.isChoping ? "success" : undefined}
-        >
-          <img
-            className={styles.image}
-            src="https://art.pixilart.com/374fd2a7a4eafb0.png"
-            alt="axe"
-          />
-        </Button>
-
-        <Button
-          onClick={getStone}
-          variant={character.isMining ? "success" : undefined}
-        >
-          <img
-            className={styles.image}
-            src="https://art.pixilart.com/2c9335fed5ab4c7.png"
-            alt="pickaxe"
-          />
-        </Button>
-
-        <Button
-          onClick={getStamina}
-          variant={character.isResting ? "success" : undefined}
-        >
-          REST
-        </Button>
-
-        <Button
-          onClick={toggleWorkers}
+          onClick={() => {
+            console.log(isHolding);
+            toggleWorkers();
+          }}
           variant={menus.showWorkers ? "success" : undefined}
         >
           workers
@@ -934,6 +990,116 @@ export default function Home() {
         >
           store
         </Button>
+      </div>
+
+      {/*=========================================================== SCRENARY */}
+
+      <div
+        className={styles.scenary}
+        style={{ position: "absolute", left: camera.x, top: camera.y }}
+      >
+        {renderGrass}
+
+        <div className={styles.treeInScenary}>
+          <button
+            className={
+              character.isChoping
+                ? styles.testHitButtonOff
+                : styles.testHitButton
+            }
+            onClick={getWood}
+          >
+            <Tree level={0} />
+          </button>
+        </div>
+        <div className={styles.treeInScenary1}>
+          <button
+            className={
+              character.isChoping
+                ? styles.testHitButtonOff
+                : styles.testHitButton
+            }
+            onClick={getWood}
+          >
+            <Tree level={0} />
+          </button>
+        </div>
+
+        <div className={styles.stoneInScenary}>
+          <button
+            className={
+              character.isMining
+                ? styles.testHitButtonOff
+                : styles.testHitButton
+            }
+            onClick={getStone}
+          >
+            <Stone level={0} />
+          </button>
+        </div>
+
+        <div className={styles.badInScenary}>
+          <button
+            className={
+              character.isResting
+                ? styles.testHitButtonOff
+                : styles.testHitButton
+            }
+            onClick={getStamina}
+          >
+            <Bad level={0} />
+          </button>
+        </div>
+
+        <div className={styles.bad2InScenary}>
+          <Bad level={0} />
+        </div>
+
+        {/* <div
+          className={
+            character.isResting
+              ? styles.characterInScenaryResting
+              : character.isChoping
+              ? styles.characterInScenaryChoping
+              : character.isMining
+              ? styles.characterInScenaryMining
+              : styles.characterInScenary
+          }
+        >
+          <Character
+            skin={"main"}
+            toTheRight={character.isMining}
+            isChopping={character.isChoping}
+            isMining={character.isMining}
+            isResting={character.isResting}
+            isTired={character.stamina < 10}
+          />
+        </div> */}
+
+        <div className={styles.characterInScenary}>
+          <CharacterWalk side={movement.side} isWalking={movement.isWalking} />
+        </div>
+
+        <div
+          className={
+            worker0.isResting
+              ? styles.workerInScenaryResting
+              : worker0.isChoping
+              ? styles.workerInScenaryChoping
+              : worker0.isMining
+              ? styles.workerInScenaryMining
+              : styles.workerInScenary
+          }
+        >
+          <Character
+            skin={"worker0"}
+            toTheRight={worker0.isChoping}
+            isChopping={worker0.isChoping}
+            isMining={worker0.isMining}
+            isResting={worker0.isResting}
+            isTired={worker0.stamina < 10}
+          />
+        </div>
       </div>
     </main>
   );

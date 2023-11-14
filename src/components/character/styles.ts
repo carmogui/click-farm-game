@@ -10,6 +10,7 @@ export const ImageContainer = styled.figure<{ $toTheRight: boolean }>`
   overflow: hidden;
   width: calc(${characterSize} * ${pixelSize});
   height: calc(${characterSize} * ${pixelSize});
+  pointer-events: none;
 
   ${({ $toTheRight }) => ($toTheRight ? "transform: scale(-1, 1);" : "")}
 
