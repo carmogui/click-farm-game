@@ -51,9 +51,11 @@ export default function Home() {
 
   const axeHit = character.axe * 2;
   const pickaxeHit = character.pickaxe * 1;
+  const workerPickaxeHit = worker0.pickaxe * 1;
 
   const axePrice = Math.floor(character.axe * 0.5 * 100) + 100;
-  const pickaxePrice = Math.floor(character.pickaxe * 0.8 * 100) + 100;
+  const pickaxePrice = Math.floor(character.pickaxe * 0.6 * 100) + 100;
+  const workerPickaxePrice = Math.floor(worker0.pickaxe * 0.8 * 150) + 150;
 
   const [menus, setMenus] = useState({
     showWorkers: false,
@@ -141,13 +143,15 @@ export default function Home() {
     character: any,
     setCharacterAny: (character: any) => any
   ) {
+    const damage = character.name === "Summer" ? workerPickaxeHit : pickaxeHit;
+
     if (character.isMining) {
       if (character.stamina >= 10) {
         setCharacterAny((cur: any) => {
           return {
             ...cur,
             stamina: cur.stamina - 10,
-            stone: cur.stone + pickaxeHit,
+            stone: cur.stone + damage,
           };
         });
 
@@ -155,7 +159,7 @@ export default function Home() {
           setCharacter((cur) => {
             return {
               ...cur,
-              stone: cur.stone + pickaxeHit,
+              stone: cur.stone + damage,
             };
           });
         }
@@ -328,17 +332,32 @@ export default function Home() {
     }
   }
 
+  function upgradeToolWorker() {
+    setCharacter((cur) => {
+      return {
+        ...cur,
+        cash: cur.cash - workerPickaxePrice,
+      };
+    });
+    setWorker0((cur) => {
+      return {
+        ...cur,
+        pickaxe: cur.pickaxe + 1,
+      };
+    });
+  }
+
   const sellLogLevels = [
     { quantity: 50, price: 50 },
-    { quantity: 100, price: 120 },
-    { quantity: 150, price: 190 },
-    { quantity: 200, price: 260 },
+    { quantity: 100, price: 110 },
+    { quantity: 150, price: 180 },
+    { quantity: 200, price: 280 },
   ];
   const sellStoneLevels = [
     { quantity: 50, price: 100 },
-    { quantity: 100, price: 240 },
-    { quantity: 150, price: 280 },
-    { quantity: 200, price: 420 },
+    { quantity: 100, price: 220 },
+    { quantity: 150, price: 360 },
+    { quantity: 200, price: 560 },
   ];
 
   const inventoryWorker = (() => {
@@ -366,6 +385,23 @@ export default function Home() {
         <span className={styles.text}>
           isResting: {worker0.isResting ? "✔️" : "❌"}
         </span>
+
+        <hr />
+
+        <div className={styles.resourceCounter}>
+          <div className={styles.toolWrapper}>
+            <img
+              className={styles.image}
+              src="https://art.pixilart.com/2c9335fed5ab4c7.png"
+              alt="pickaxe"
+            />
+            <span> Lvl: {worker0.pickaxe}</span>
+          </div>
+
+          <span className={workerPickaxeHit > 0 ? styles.textGreen : ""}>
+            + {workerPickaxeHit}
+          </span>
+        </div>
 
         <hr />
 
@@ -653,6 +689,34 @@ export default function Home() {
             <span>-</span>
             <Cash />
             <span>{pickaxePrice}</span>
+          </div>
+        </Button>
+      </div>
+
+      <div
+        className={
+          character.cash < workerPickaxePrice
+            ? styles.orderCardDisabled2
+            : styles.orderCard2
+        }
+      >
+        <div className={styles.iconsOrderWrapper}>
+          <img
+            className={styles.image}
+            src="https://art.pixilart.com/2c9335fed5ab4c7.png"
+            alt="pickaxe"
+          />
+          <span>+1 lvl (worker)</span>
+        </div>
+
+        <Button
+          onClick={() => upgradeToolWorker()}
+          disabled={character.cash < workerPickaxePrice}
+        >
+          <div className={styles.iconsOrderWrapper}>
+            <span>-</span>
+            <Cash />
+            <span>{workerPickaxePrice}</span>
           </div>
         </Button>
       </div>
