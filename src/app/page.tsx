@@ -278,13 +278,13 @@ export default function Home() {
     });
   }
 
-  function sellWood(quantity: number) {
+  function sellWood({ quantity, price }: { quantity: number; price: number }) {
     if (character.wood >= quantity) {
       setCharacter((cur) => {
         return {
           ...cur,
           wood: cur.wood - quantity,
-          cash: cur.cash + quantity,
+          cash: cur.cash + price,
         };
       });
     } else {
@@ -292,13 +292,13 @@ export default function Home() {
     }
   }
 
-  function sellStone(quantity: number) {
+  function sellStone({ quantity, price }: { quantity: number; price: number }) {
     if (character.stone >= quantity) {
       setCharacter((cur) => {
         return {
           ...cur,
           stone: cur.stone - quantity,
-          cash: cur.cash + quantity,
+          cash: cur.cash + price,
         };
       });
     } else {
@@ -508,7 +508,7 @@ export default function Home() {
                 </div>
 
                 <Button
-                  onClick={() => sellWood(sellLevel.quantity)}
+                  onClick={() => sellWood(sellLevel)}
                   disabled={orderDisabled}
                 >
                   <div className={styles.iconsOrderWrapper}>
@@ -543,7 +543,7 @@ export default function Home() {
                 </div>
 
                 <Button
-                  onClick={() => sellStone(sellLevel.quantity)}
+                  onClick={() => sellStone(sellLevel)}
                   disabled={orderDisabled}
                 >
                   <div className={styles.iconsOrderWrapper}>
