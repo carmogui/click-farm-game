@@ -7,7 +7,7 @@ const ButtonVariant = {
     border-right: 5px solid green;
   `,
   danger: css`
-    background-color: red;
+    background-color: #ff5b5b;
     border-bottom: 5px solid #9e1a1a;
     border-right: 5px solid #9e1a1a;
   `,

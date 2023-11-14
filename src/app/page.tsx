@@ -12,6 +12,7 @@ import {
   Stone,
   Tree,
 } from "@/components";
+import { Cash } from "@/components/cash";
 
 enum Resources {
   Wood = "wood",
@@ -327,7 +328,18 @@ export default function Home() {
     }
   }
 
-  const sellLevels = [50, 100, 500, 1000, 5000];
+  const sellLogLevels = [
+    { quantity: 50, price: 50 },
+    { quantity: 100, price: 120 },
+    { quantity: 150, price: 190 },
+    { quantity: 200, price: 260 },
+  ];
+  const sellStoneLevels = [
+    { quantity: 50, price: 100 },
+    { quantity: 100, price: 240 },
+    { quantity: 150, price: 280 },
+    { quantity: 200, price: 420 },
+  ];
 
   const inventoryWorker = (() => {
     const { isChoping, isMining, isResting } = worker0;
@@ -377,11 +389,7 @@ export default function Home() {
       </div>
 
       <div className={styles.resourceCounter}>
-        <img
-          className={styles.image}
-          src="https://media.printables.com/media/prints/139211/images/1323029_1068d1ae-63cf-4820-8763-9e935d91ec63/coin-image.png"
-          alt="coins:"
-        />
+        <Cash />
         <span className={styles.text}>{character.cash}</span>
       </div>
 
@@ -443,31 +451,71 @@ export default function Home() {
     <div className={styles.floatMenu}>
       <h2>orders</h2>
 
+      <div className={styles.iconsOrderWrapper}>
+        <Cash />
+        <span>{character.cash}</span>
+      </div>
+
+      <hr />
+
+      <div className={styles.resourceCounter}>
+        <div className={styles.toolWrapper}>
+          <Image
+            className={styles.sprite}
+            src="/resources/log.png"
+            width={32}
+            height={32}
+            alt="wood:"
+          />
+          <span className={styles.text}>{character.wood}</span>
+        </div>
+      </div>
+
+      <div className={styles.resourceCounter}>
+        <div className={styles.toolWrapper}>
+          <img
+            className={styles.image}
+            src="https://i.redd.it/w1ctilzr8df71.png"
+            alt="stone:"
+          />
+          <span className={styles.text}>{character.stone}</span>
+        </div>
+      </div>
+
+      <hr />
+
       <div className={styles.storeButtons}>
         <div className={styles.orderWrapper}>
-          {sellLevels.map((sellLevel) => {
-            const orderDisabled = character.wood < sellLevel;
+          {sellLogLevels.map((sellLevel) => {
+            const orderDisabled = character.wood < sellLevel.quantity;
 
             return (
               <div
-                key={sellLevel}
+                key={sellLevel.price}
                 className={
                   orderDisabled ? styles.orderCardDisabled : styles.orderCard
                 }
               >
-                <Image
-                  className={styles.sprite}
-                  src="/resources/log.png"
-                  width={32}
-                  height={32}
-                  alt="wood"
-                />
-                <span>{sellLevel}</span>
+                <div className={styles.iconsOrderWrapper}>
+                  <Image
+                    className={styles.sprite}
+                    src="/resources/log.png"
+                    width={32}
+                    height={32}
+                    alt="wood"
+                  />
+                  <span>{sellLevel.quantity}</span>
+                </div>
+
                 <Button
-                  onClick={() => sellWood(sellLevel)}
+                  onClick={() => sellWood(sellLevel.quantity)}
                   disabled={orderDisabled}
                 >
-                  sell
+                  <div className={styles.iconsOrderWrapper}>
+                    <span>+</span>
+                    <Cash />
+                    <span>{sellLevel.price}</span>
+                  </div>
                 </Button>
               </div>
             );
@@ -475,27 +523,34 @@ export default function Home() {
         </div>
 
         <div className={styles.orderWrapper}>
-          {sellLevels.map((sellLevel) => {
-            const orderDisabled = character.stone < sellLevel;
+          {sellStoneLevels.map((sellLevel) => {
+            const orderDisabled = character.stone < sellLevel.quantity;
 
             return (
               <div
-                key={sellLevel}
+                key={sellLevel.price}
                 className={
                   orderDisabled ? styles.orderCardDisabled : styles.orderCard
                 }
               >
-                <img
-                  className={styles.image}
-                  src="https://i.redd.it/w1ctilzr8df71.png"
-                  alt="stone"
-                />
-                <span>{sellLevel}</span>
+                <div className={styles.iconsOrderWrapper}>
+                  <img
+                    className={styles.image}
+                    src="https://i.redd.it/w1ctilzr8df71.png"
+                    alt="stone"
+                  />
+                  <span>{sellLevel.quantity}</span>
+                </div>
+
                 <Button
-                  onClick={() => sellStone(sellLevel)}
+                  onClick={() => sellStone(sellLevel.quantity)}
                   disabled={orderDisabled}
                 >
-                  sell
+                  <div className={styles.iconsOrderWrapper}>
+                    <span>+</span>
+                    <Cash />
+                    <span>{sellLevel.price}</span>
+                  </div>
                 </Button>
               </div>
             );
@@ -509,20 +564,96 @@ export default function Home() {
     <div className={styles.floatMenu}>
       <h2>store</h2>
 
-      <span>cash {character.cash}</span>
+      <div className={styles.iconsOrderWrapper}>
+        <Cash />
+        <span>{character.cash}</span>
+      </div>
 
-      <div className={styles.storeButtons}>
+      <hr />
+
+      <div className={styles.resourceCounter}>
+        <div className={styles.toolWrapper}>
+          <img
+            className={styles.image}
+            src="https://art.pixilart.com/374fd2a7a4eafb0.png"
+            alt="axe"
+          />
+          <span> Lvl: {character.axe}</span>
+        </div>
+
+        <span className={axeHit > 0 ? styles.textGreen : ""}>+ {axeHit}</span>
+      </div>
+
+      <div className={styles.resourceCounter}>
+        <div className={styles.toolWrapper}>
+          <img
+            className={styles.image}
+            src="https://art.pixilart.com/2c9335fed5ab4c7.png"
+            alt="pickaxe"
+          />
+          <span> Lvl: {character.pickaxe}</span>
+        </div>
+
+        <span className={pickaxeHit > 0 ? styles.textGreen : ""}>
+          + {pickaxeHit}
+        </span>
+      </div>
+
+      <hr />
+
+      <div
+        className={
+          character.cash < axePrice
+            ? styles.orderCardDisabled2
+            : styles.orderCard2
+        }
+      >
+        <div className={styles.iconsOrderWrapper}>
+          <img
+            className={styles.image}
+            src="https://art.pixilart.com/374fd2a7a4eafb0.png"
+            alt="axe"
+          />
+          <span>+1 lvl</span>
+        </div>
+
         <Button
           onClick={() => upgradeTool(Tools.Axe)}
           disabled={character.cash < axePrice}
         >
-          upgrade axe ({axePrice} coins)
+          <div className={styles.iconsOrderWrapper}>
+            <span>-</span>
+            <Cash />
+            <span>{axePrice}</span>
+          </div>
         </Button>
+      </div>
+
+      <div
+        className={
+          character.cash < pickaxePrice
+            ? styles.orderCardDisabled2
+            : styles.orderCard2
+        }
+      >
+        <div className={styles.iconsOrderWrapper}>
+          <img
+            className={styles.image}
+            src="https://art.pixilart.com/2c9335fed5ab4c7.png"
+            alt="pickaxe"
+          />
+          <span>+1 lvl</span>
+        </div>
+
         <Button
           onClick={() => upgradeTool(Tools.Pickaxe)}
           disabled={character.cash < pickaxePrice}
         >
-          upgrade pickaxe({pickaxePrice} coins)
+          <div className={styles.iconsOrderWrapper}>
+            <span>-</span>
+            <Cash />
+            <span>{pickaxePrice}</span>
+          </div>
         </Button>
       </div>
     </div>
