@@ -171,7 +171,7 @@ export default function Home() {
   const [ticking, setTicking] = useState(true),
     [count, setCount] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => ticking && setCount(count + 1), 1e3);
+    const timer = setTimeout(() => ticking && setCount(count + 1), 100);
 
     superDuperWorkerAi(worker0);
 
@@ -183,6 +183,8 @@ export default function Home() {
 
     characterMining(character, setCharacter);
     characterMining(worker0, setWorker0);
+
+    mouseWalk();
 
     return () => clearTimeout(timer);
 
@@ -797,6 +799,21 @@ export default function Home() {
     x: 200,
     y: 200,
   });
+  const [charPositionMouse, setCharPositionMouse] = useState<{
+    side: "top" | "right" | "bottom" | "left";
+    isWalking: boolean;
+    x: number;
+    y: number;
+    clientX: number;
+    clientY: number;
+  }>({
+    x: 300,
+    y: 300,
+    side: "bottom",
+    isWalking: false,
+    clientX: 300,
+    clientY: 300,
+  });
 
   const [movement, setMovement] = useState<{
     side: "top" | "right" | "bottom" | "left";
@@ -805,6 +822,103 @@ export default function Home() {
     side: "bottom",
     isWalking: false,
   });
+
+  function walk(direction: string) {
+    const movementSpeed = 10;
+    if (direction === "bottom") {
+      setCharPosition((cur) => {
+        return {
+          x: cur.x,
+          y: cur.y + movementSpeed,
+        };
+      });
+    }
+    if (direction === "top") {
+      setCharPosition((cur) => {
+        return {
+          x: cur.x,
+          y: cur.y - movementSpeed,
+        };
+      });
+    }
+    if (direction === "left") {
+      setCharPosition((cur) => {
+        return {
+          x: cur.x - movementSpeed,
+          y: cur.y,
+        };
+      });
+    }
+    if (direction === "right") {
+      setCharPosition((cur) => {
+        return {
+          x: cur.x + movementSpeed,
+          y: cur.y,
+        };
+      });
+    }
+
+    setTimeout(() => {
+      if (movement.isWalking) {
+        walk(direction);
+      }
+    }, 50);
+  }
+
+  function mouseWalk() {
+    const movementSpeed = 20;
+    const characterWidthMiddle = (16 * 8) / 2;
+    const characterHeightFoot = (16 * 8) / 2 + 50;
+
+    setCharPositionMouse((cur) => {
+      const { clientX, clientY } = cur;
+      const { x, y } = cur;
+
+      const xToGo = clientX - camera.x - characterWidthMiddle;
+      const yToGo = clientY - camera.y - characterHeightFoot;
+
+      if (x + movementSpeed < xToGo) {
+        return {
+          ...cur,
+          isWalking: true,
+          side: "right",
+          x: x + movementSpeed,
+        };
+      }
+
+      if (x - movementSpeed > xToGo) {
+        return {
+          ...cur,
+          isWalking: true,
+          side: "left",
+          x: x - movementSpeed,
+        };
+      }
+
+      if (y + movementSpeed < yToGo) {
+        return {
+          ...cur,
+          isWalking: true,
+          side: "bottom",
+          y: y + movementSpeed,
+        };
+      }
+
+      if (y - movementSpeed > yToGo) {
+        return {
+          ...cur,
+          isWalking: true,
+          side: "top",
+          y: y - movementSpeed,
+        };
+      }
+
+      return {
+        ...cur,
+        isWalking: false,
+      };
+    });
+  }
 
   useEffect(() => {
     if (firstRender.current) {
@@ -816,77 +930,23 @@ export default function Home() {
       });
 
       document.body.addEventListener("keypress", (e) => {
-        if (e.code === "KeyI") {
+        if (e.code === "KeyQ") {
+          toggleWorkers();
+        }
+      });
+      document.body.addEventListener("keypress", (e) => {
+        if (e.code === "KeyW") {
           toggleInventory();
         }
       });
-
-      document.body.addEventListener("keydown", (e) => {
-        if (e.code === "KeyS") {
-          setMovement((cur) => {
-            return {
-              side: "bottom",
-              isWalking: true,
-            };
-          });
-        }
-        if (e.code === "KeyW") {
-          setMovement((cur) => {
-            return {
-              side: "top",
-              isWalking: true,
-            };
-          });
-        }
-        if (e.code === "KeyD") {
-          setMovement((cur) => {
-            return {
-              side: "right",
-              isWalking: true,
-            };
-          });
-        }
-        if (e.code === "KeyA") {
-          setMovement((cur) => {
-            return {
-              side: "left",
-              isWalking: true,
-            };
-          });
+      document.body.addEventListener("keypress", (e) => {
+        if (e.code === "KeyE") {
+          toggleOrders();
         }
       });
-      document.body.addEventListener("keyup", (e) => {
-        if (e.code === "KeyS") {
-          setMovement((cur) => {
-            return {
-              side: "bottom",
-              isWalking: false,
-            };
-          });
-        }
-        if (e.code === "KeyW") {
-          setMovement((cur) => {
-            return {
-              side: "top",
-              isWalking: false,
-            };
-          });
-        }
-        if (e.code === "KeyD") {
-          setMovement((cur) => {
-            return {
-              side: "right",
-              isWalking: false,
-            };
-          });
-        }
-        if (e.code === "KeyA") {
-          setMovement((cur) => {
-            return {
-              side: "left",
-              isWalking: false,
-            };
-          });
+      document.body.addEventListener("keypress", (e) => {
+        if (e.code === "KeyR") {
+          toggleStore();
         }
       });
     }
@@ -927,6 +987,7 @@ export default function Home() {
       {menus.showOrders && orders}
 
       {menus.showStore && store}
+      <div className="block"></div>
 
       {/* =============================== STAMINA */}
       <div className={styles.staminaWrapper}>
@@ -944,13 +1005,9 @@ export default function Home() {
       </div>
 
       {/* ---------------------------------------------------HOTBAR------------------------------------ */}
-
       <div className={styles.actionButtons}>
         <Button
-          onClick={() => {
-            console.log(isHolding);
-            toggleWorkers();
-          }}
+          onClick={toggleWorkers}
           variant={menus.showWorkers ? "success" : undefined}
         >
           workers
@@ -979,10 +1036,21 @@ export default function Home() {
       </div>
 
       {/*=========================================================== SCRENARY */}
-
       <div
         className={styles.scenary}
         style={{ position: "absolute", left: camera.x, top: camera.y }}
+        onClick={(e) => {
+          console.log(e);
+          const { clientX, clientY } = e;
+
+          setCharPositionMouse((cur) => {
+            return {
+              ...cur,
+              clientX: clientX,
+              clientY: clientY,
+            };
+          });
+        }}
       >
         {renderGrass}
 
@@ -1041,7 +1109,7 @@ export default function Home() {
           <Bad level={0} />
         </div>
 
-        {/* <div
+        <div
           className={
             character.isResting
               ? styles.characterInScenaryResting
@@ -1060,17 +1128,20 @@ export default function Home() {
             isResting={character.isResting}
             isTired={character.stamina < 10}
           />
-        </div> */}
+        </div>
 
         <div
           style={{
             position: "absolute",
-            left: charPosition.x,
-            top: charPosition.y,
+            left: charPositionMouse.x,
+            top: charPositionMouse.y,
           }}
           className={styles.characterInScenary}
         >
-          <CharacterWalk side={movement.side} isWalking={movement.isWalking} />
+          <CharacterWalk
+            side={charPositionMouse.side}
+            isWalking={charPositionMouse.isWalking}
+          />
         </div>
 
         <div

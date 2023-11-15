@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const characterSize = "16px";
-const pixelSize = 4;
+const pixelSize = 8;
 
 const framesWidth = 4;
 const framesHeight = 4;
